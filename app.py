@@ -16,13 +16,38 @@ if page =="Habit Board":
     habit=st.text_input("Enter a naw habit")
 
     if st.button("Add habit"):
-        st.session_state.habits.append(habit)
-
+        if habit !="":
+            st.session_state.habits.append({
+                "name": habit,
+                "done": False
+            })
+        
     st.subheader("Your Habit")
 
-    for h in st.session_state.habits:
-        st.write("•",h)
+    for i, h in enumerate (st.session_state.habits):
+        col1, col2 = st.columns([6,2])
+                    
+                           # Checkbox 
+        with col1:
+            done = st.checkbox(h["name"], value=h["done"], key=f"habit{i}")
+            h["done"]=done
+                        # Delete button
+        with col2:
+            if st.button("Delete" , key=f"del{i}"):
+                st.session_state.habits.pop(i)
+                st.rerun()
+        
 
+    # 👇 LOOP KE BAAD GRAPH (IMPORTANT 🔥)
+    done_count = sum(1 for h in st.session_state.habits if h["done"])
+    pending_count = len(st.session_state.habits) - done_count
+
+    st.subheader("Overall Progress")
+
+    st.bar_chart({
+        "Done": done_count,
+        "Pending": pending_count
+    })
 
 elif page =="Dairy":
     st.header("Dairy")
